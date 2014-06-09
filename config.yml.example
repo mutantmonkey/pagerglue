@@ -9,5 +9,5 @@ methods:
 - sms.SMS:
     twilio_account_sid: 
     twilio_auth_token: 
-    sender: +15555555055
-    notify: [+15555555155]
+    sender: "+15555555055"
+    notify: ["+15555555155"]
