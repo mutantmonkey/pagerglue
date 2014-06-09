@@ -1,0 +1,12 @@
+---
+broker: amqp://hackme:hackme@example.com/pager
+queue: pager
+xmpp:
+  jid: user@xmpp.example.com/pagerglue 
+  password: hackme
+  notify: [admin@xmpp.example.com]
+sms:
+  twilio_account_sid: 
+  twilio_auth_token: 
+  sender: +15555555055
+  notify: [+15555555155]
