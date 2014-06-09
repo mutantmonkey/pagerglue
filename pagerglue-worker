@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import importlib
 import kombu
 import yaml
