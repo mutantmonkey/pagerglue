@@ -3,6 +3,7 @@ import kombu
 import yaml
 from pagerglue import worker
 from pagerglue import methods
+from pagerglue import safessl
 
 
 if __name__ == '__main__':
@@ -13,7 +14,7 @@ if __name__ == '__main__':
         configpath = os.path.expanduser('~/.config/pagerglue/config.yml')
     config = yaml.safe_load(open(configpath))
 
-    with kombu.Connection(config['broker']) as conn:
+    with kombu.Connection(config['broker'], ssl=config['broker_ssl']) as conn:
         conn.ensure_connection()
         worker = worker.Worker(conn, config)
 
