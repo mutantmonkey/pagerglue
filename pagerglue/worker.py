@@ -11,8 +11,8 @@ class Worker(kombu.mixins.ConsumerMixin):
         self.config = config
         self.methods = []
 
-    def register_method(self, class_, config_key):
-        self.methods.append(class_(self.config[config_key]))
+    def register_method(self, class_, args):
+        self.methods.append(class_(args))
 
     def get_consumers(self, Consumer, channel):
         return [Consumer(queues=[self.queue],

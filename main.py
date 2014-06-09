@@ -1,8 +1,8 @@
+import importlib
 import kombu
 import yaml
 from pagerglue import worker
-from pagerglue.methods import xmpp
-#from pagerglue.methods import sms
+from pagerglue import methods
 
 
 if __name__ == '__main__':
@@ -16,8 +16,17 @@ if __name__ == '__main__':
     with kombu.Connection(config['broker']) as conn:
         conn.ensure_connection()
         worker = worker.Worker(conn, config)
-        worker.register_method(xmpp.XMPP, 'xmpp')
-        #worker.register_method(sms.SMS, 'sms')
+
+        for method in config['methods']:
+            # take the dict in the list item, use the key as the
+            # method to import and the value as the method config
+            component, args = method.copy().popitem()
+            components = component.split('.')
+            path = '.' + '.'.join(components[:-1])
+            module = importlib.import_module(path, package='pagerglue.methods')
+            class_ = getattr(module, components[-1])
+            worker.register_method(class_, args)
+
         try:
             worker.run()
         except KeyboardInterrupt:
