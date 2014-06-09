@@ -19,9 +19,13 @@ if __name__ == '__main__':
         worker = worker.Worker(conn, config)
 
         for method in config['methods']:
-            # take the dict in the list item, use the key as the
-            # method to import and the value as the method config
-            component, args = method.copy().popitem()
+            if type(method) == dict:
+                # take the dict in the list item, use the key as the
+                # method to import and the value as the method config
+                component, args = method.copy().popitem()
+            else:
+                component = method
+                args = {}
             components = component.split('.')
             path = '.' + '.'.join(components[:-1])
             module = importlib.import_module(path, package='pagerglue.methods')

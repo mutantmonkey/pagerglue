@@ -3,6 +3,7 @@ broker: amqp://hackme:hackme@example.com/pager
 broker_ssl: off
 queue: pager
 methods:
+- stdout.Stdout
 - xmpp.XMPP:
     jid: user@xmpp.example.com/pagerglue
     password: hackme
