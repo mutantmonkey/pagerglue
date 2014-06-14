@@ -6,14 +6,28 @@ logger = logging.getLogger(__name__)
 
 
 class XMPPBackend(sleekxmpp.ClientXMPP):
-    def __init__(self, jid, password):
+    def __init__(self, jid, password, notify_jids):
         super().__init__(jid, password)
+
+        self.notify_jids = notify_jids
 
         self.add_event_handler('session_start', self.start, threaded=True)
 
     def start(self, event):
         self.send_presence()
         self.get_roster()
+
+        # check existing roster for jids we don't want
+        for jid in self.roster[self.jid]:
+            if jid != self.jid and jid not in self.notify_jids:
+                logger.debug("Remove {} from roster".format(jid))
+                self.update_roster(jid, subscription='remove')
+
+        # add jids to roster, if needed
+        for jid in self.notify_jids:
+            if jid not in self.roster[self.jid]:
+                logger.debug("Add {} to roster".format(jid))
+                self.update_roster(jid, subscription='both')
 
     def send_message(self, to, body):
         msg = self.Message()
@@ -36,7 +50,8 @@ class XMPP(PageMethod):
             logger.warning(
                 "Missing XMPP configuration options; XMPP support disabled.")
 
-        self.xmpp = XMPPBackend(self.xmpp_jid, self.xmpp_password)
+        self.xmpp = XMPPBackend(self.xmpp_jid, self.xmpp_password,
+                                self.notify_jids)
 
         if self.xmpp.connect():
             logger.debug("Connected to XMPP server")
